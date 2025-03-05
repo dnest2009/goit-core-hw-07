@@ -26,11 +26,16 @@ class Phone(Field):
 class Birthday(Field):
     def __init__(self, value):
         try:
-            self.value = datetime.strptime(value,"%d.%m.%Y").date() # та перетворіть рядок на об'єкт datetime                                                        
+            self.value = value
+            datetime.strptime(value,"%d.%m.%Y").date() # та перетворіть рядок на об'єкт datetime                                                        
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY") # Додайте перевірку коректності даних
+        
     def __str__(self):
-        return f"{self.value.strftime("%d.%m.%Y")}"  # відображення дати для команди show-birthday
+        return f"{self.value}" # f"{self.value.strptime("%d.%m.%Y")}"  # відображення дати для команди show-birthday
+        
+    def __repr__(self):
+        return datetime.strptime(self.value,"%d.%m.%Y").date()
 
 
 class Record:
@@ -108,7 +113,9 @@ class AddressBook(UserDict):
         today = date.today()
         for user in self.data:
             if self.data[user].birthday:         #перевірка істинності існування запису у полі "birthday"
-                birthday_this_year = self.data[user].birthday.value.replace(year=today.year)    #якщо поле існує => призначаємо значення змінній "birthday_this_year" та змінюємо рік на теперішній
+                day = self.data[user].birthday.value
+                bday = datetime.strptime(day,"%d.%m.%Y").date() # перетворюємо рядок у значення datetime
+                birthday_this_year = bday.replace(year=today.year)    #якщо поле існує => призначаємо значення змінній "birthday_this_year" та змінюємо рік на теперішній
             else:
                 continue
             if birthday_this_year < today:                                                       # якщо день народження вже минув
@@ -127,7 +134,7 @@ class AddressBook(UserDict):
         u=[]
         for key in self.data:
             if self.data[key].birthday: 
-                b= self.data[key].birthday.value.strftime("%d.%m.%Y") #значення дати дня народження у форматі "день.місяць.рік"
+                b= self.data[key].birthday.value #значення дати дня народження у форматі "день.місяць.рік"
             else:
                 b= self.data[key].birthday
             y = self.data[key].name.value     #значення імені
@@ -136,50 +143,55 @@ class AddressBook(UserDict):
         return f"_______________Книга контактів______________\n{"\n".join(k for k in u)}"  #додаємо \n для кращого відображенн
        
         
-book = AddressBook()
-john_record = Record("John")
-john_record.add_phone("1234567890")
-john_record.add_phone("5555555555")
-john_record.add_phone("5555558555")
-john_record.add_phone("1555555555")
-#john_record.add_birthday("07.03.1000")
-book.add_record(john_record)
-jane_record = Record("Jane")
-jane_record.add_phone("9876543210")
-jane_record.add_phone("1176543211")
-# #jane_record.remove_phone("9876543210")
-# jane_record.edit_phone("1176543211","1234567890")
-jane_record.add_birthday("11.04.1998")
-book.add_record(jane_record)
-# # # john = book.find("John")
-# # # # john1 = book.find("Jane")
-# # # # john1.add_phone("1176543211")
-# # # # john1.edit_phone("1176543211","0987654321")
-# # # # john.edit_phone("1234567890","1112223333")
-# # # # found_phone = john.find_phone("5555555555")
-# # # # print(f"{john.name}: {found_phone}")  #Виведення: John: 5555555555
-Ivan_record = Record("Ivan")
-Ivan_record.add_phone("1907328922")
-#Ivan_record.add_birthday("08.03.1998")
-book.add_record(Ivan_record)
-Igor_record = Record("Igor")
-Igor_record.add_phone("1907328922")
-Igor_record.add_birthday("08.03.1998")
-book.add_record(Igor_record)
-I_record = Record("I")
-I_record.add_phone("1907328922")
-I_record.add_birthday("10.03.1998")
-book.add_record(I_record)
-# # # # # book.delete("Ivan")
-# # # # #Ivan_record.edit_phone("1907328922", "0987654321")
+# book = AddressBook()
+# john_record = Record("John")
+# john_record.add_phone("1234567890")
+# john_record.add_phone("5555555555")
+# john_record.add_phone("5555558555")
+# john_record.add_phone("1555555555")
+# #john_record.add_birthday("07.03.1000")
+# book.add_record(john_record)
+# jane_record = Record("Jane")
+# jane_record.add_phone("9876543210")
+# jane_record.add_phone("1176543211")
+# # #jane_record.remove_phone("9876543210")
+# # jane_record.edit_phone("1176543211","1234567890")
+# jane_record.add_birthday("11.11.1998")
+# book.add_record(jane_record)
+# # # # john = book.find("John")
+# # # # # john1 = book.find("Jane")
+# # # # # john1.add_phone("1176543211")
+# # # # # john1.edit_phone("1176543211","0987654321")
+# # # # # john.edit_phone("1234567890","1112223333")
+# # # # # found_phone = john.find_phone("5555555555")
+# # # # # print(f"{john.name}: {found_phone}")  #Виведення: John: 5555555555
+# Ivan_record = Record("Ivan")
+# Ivan_record.add_phone("1907328922")
+# #Ivan_record.add_birthday("08.03.1998")
+# book.add_record(Ivan_record)
+# Igor_record = Record("Igor")
+# Igor_record.add_phone("1907328922")
+# Igor_record.add_birthday("08.03.1998")
+# book.add_record(Igor_record)
+# I_record = Record("I")
+# I_record.add_phone("2207328422")
+# I_record.add_phone("1907428922")
+# I_record.add_phone("1907328912")
+# I_record.add_phone("1907328922")
+# I_record.add_birthday("10.03.1998")
+# book.add_record(I_record)
+# # # # # # book.delete("Ivan")
+# # # # # #Ivan_record.edit_phone("1907328922", "0987654321")
 
-# # print(book.__dict__)
-print(book.get_upcoming_birthdays())
-print(john_record.birthday)
-print(jane_record.birthday)
-print(Ivan_record.birthday)
-print(Igor_record.birthday)
-print(I_record.birthday)
+# print(book)
+# print(book.get_upcoming_birthdays())
+# # print(john_record.birthday)
+# # print(jane_record.birthday)
+# # print(Ivan_record.birthday)
+# # print(Igor_record.birthday)
+
+# # z=book.data["I"].phones
+# # print (f"{", ".join(n.value for n in z)}")
 
 
 

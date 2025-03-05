@@ -49,8 +49,6 @@ def parse_input(user_input):         #парсер команд
 @input_error
 def add_contact(args, book: AddressBook): #ф-ія додати контакт
     name, phone, *_ = args
-    if not phone.isdigit() or len(phone) != 10: #перевірка номеру
-            raise ValueError("Wrong phone number format")
     record = book.find(name)
     message = "Contact updated."
     if record is None:
@@ -98,10 +96,9 @@ def change_number(args,book): # функція зміни контакту
     
 
 @input_error   
-def view_number(args,contacts): # функція перегляду номеру телефону конкретного користувача
-    name = args[0]              # і'мя йде першим у списку argv, потім телефон
-    number = contacts[name]     # номер телефону виводимо за ключем "ім'я"
-    return number
+def view_number(args,book): # функція перегляду номеру телефону конкретного користувача
+    name, *_ = args
+    return  ", ".join(n.value for n in book.data[name].phones)
 
 
 @input_error
@@ -113,7 +110,6 @@ def main():     # основна функція циклу
     print(welcome)  #виведення привітання
     print(comands)   # виведення команд
     book = AddressBook()
-    contacts = {}
     while True:
         user_input = input("Enter a command: ")    #ввід команди користувачем
         command, *args = parse_input(user_input)   #запускаємо парсер команд
@@ -127,7 +123,7 @@ def main():     # основна функція циклу
         elif command == "change":
             print(change_number(args, book))    #команда змінити номер телефону
         elif command == "phone":
-            print(view_number(args,contacts))   #команда перегляд номеру телефону окремого юзера
+            print(view_number(args,book))   #команда перегляд номеру телефону окремого юзера
         elif command == 'all':                  
             print(view_all_contacts(book))      #команда перегляду всіх контактів
         elif command == "add-birthday":
@@ -138,7 +134,6 @@ def main():     # основна функція циклу
             print(birthdays(book))
         else: 
             print ("Enter the argument for the command")
-
 
 
 if __name__ == "__main__":
