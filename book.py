@@ -33,9 +33,6 @@ class Birthday(Field):
         
     def __str__(self):
         return f"{self.value}" # f"{self.value.strptime("%d.%m.%Y")}"  # відображення дати для команди show-birthday
-        
-    def __repr__(self):
-        return datetime.strptime(self.value,"%d.%m.%Y").date()
 
 
 class Record:
